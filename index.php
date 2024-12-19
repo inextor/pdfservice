@@ -39,7 +39,7 @@ class Service extends RestController
 		error_log("Printing PDF");
 		$mpdf = new \Mpdf\Mpdf
 		([
-			"tempDir"=> "/tmp",
+			"tempDir"=> sys_get_temp_dir(),
 			'default_font'=>$default_font,
 			'default_font_size'=>$default_font_size,
 			'orientation'=> $orientation
