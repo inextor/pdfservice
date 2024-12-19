@@ -70,6 +70,7 @@ class Service extends RestController
 				<title>Test Print Header</title>
 			</head>
 			<body>
+				<img src="https://trikitrakes.integranet.xyz/api/image.php?id=1&width=300">
 				<h1>This is a test header</h1>
 				<table style="width:100%">
 					<thead>
