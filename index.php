@@ -14,26 +14,29 @@ class Service extends RestController
 {
 	function get()
 	{
-		return $this->getPdf( $this->getHtml());
+		$params = $this->getMethodParams();
+		$orientation = $params['orientation']??'P';
+		$default_font_size = $params['default_font_size']??9;
+		$default_font = $params['default_font']??'helvetica';
+		$download_name = $params['download_name']?? '';
+
+		return $this->getPdf( $this->getHtml(), $orientation, $default_font_size, $default_font, $download_name );
 	}
 
 	function post()
 	{
 		$params = $this->getMethodParams();
-		$orientation = $_POST['orientation']??'P';
+		$orientation = $params['orientation']??'P';
+		$default_font_size = $params['default_font_size']??9;
+		$default_font = $params['default_font']??'helvetica';
+		$download_name = $params['download_name']? $params['download_name'] : '';
 
-		$default_font_size = $_POST['default_font_size']??9;
-		$default_font = $_POST['default_font']??'helvetica';
-
-		header('Content-Type: application/pdf');
-		header('Last-Modified: '.gmdate('D, d M Y H:i:s', time()).' GMT');
-		header('Cache-Control: no-cache, must-revalidate');
-		return $this->getPdf( $this->getHtml(), $orientation, $default_font_size, $default_font );
+		return $this->getPdf( $this->getHtml(), $orientation, $default_font_size, $default_font, $download_name );
 	}
 
-	function getPdf($html, $orientation='P',$default_font_size=9,$default_font='helvetica')
+	function getPdf($html, $orientation='P',$default_font_size=9,$default_font='helvetica', $download_name='')
 	{
-
+		error_log("Printing PDF");
 		$mpdf = new \Mpdf\Mpdf
 		([
 			"tempDir"=> "/tmp",
@@ -48,6 +51,15 @@ class Service extends RestController
 			$string_attach = $mpdf->Output('output.pdf','S');
 
 			header('Content-Type: application/pdf');
+			header('Last-Modified: '.gmdate('D, d M Y H:i:s', time()).' GMT');
+			header('Cache-Control: no-cache, must-revalidate');
+
+			if($download_name)
+			{
+				$sanitized_filename = preg_replace('/[^a-zA-Z0-9_.-]/', '', $download_name);
+				error_log("Sanitized filename $sanitized_filename");
+				header('Content-Disposition: attachment; filename="' .$sanitized_filename. '"');
+			}
 
 			return $this->sendStatus(200)->raw( $string_attach );
 		}
@@ -56,7 +68,6 @@ class Service extends RestController
 			return $this->sendStatus(500)->text( "Error al generar el PDF. {$e->getMessage()}" );
 		}
 
-		// header('Content-Type: application/pdf');
 		return $this->sendStatus(500)->text( "Error al generar el PDF." );
 	}
 
@@ -70,7 +81,7 @@ class Service extends RestController
 				<title>Test Print Header</title>
 			</head>
 			<body>
-				<img src="https://trikitrakes.integranet.xyz/api/image.php?id=1&width=300">
+				<!--img src="https://trikitrakes.integranet.xyz/api/image.php?id=1&width=300"-->
 				<h1>This is a test header</h1>
 				<table style="width:100%">
 					<thead>
