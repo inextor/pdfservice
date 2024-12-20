@@ -12,6 +12,11 @@ use \akou\LoggableException;
 
 class Service extends RestController
 {
+	function options()
+	{
+		$this->setAllowHeader();
+		return $this->defaultOptions();
+	}
 	function get()
 	{
 		$params = $this->getMethodParams();
