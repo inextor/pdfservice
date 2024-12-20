@@ -31,12 +31,18 @@ class Service extends RestController
 	function post()
 	{
 		$params = $this->getMethodParams();
+
+		if( empty($params['html']) )
+		{
+			return $this->sendStatus(400)->text( "Missing parameter 'html'" );
+		}
+
 		$orientation = $params['orientation']??'P';
 		$default_font_size = $params['default_font_size']??9;
 		$default_font = $params['default_font']??'helvetica';
 		$download_name = $params['download_name']? $params['download_name'] : '';
 
-		return $this->getPdf( $this->getHtml(), $orientation, $default_font_size, $default_font, $download_name );
+		return $this->getPdf( $params['html'], $orientation, $default_font_size, $default_font, $download_name );
 	}
 
 	function getPdf($html, $orientation='P',$default_font_size=9,$default_font='helvetica', $download_name='')
@@ -44,7 +50,7 @@ class Service extends RestController
 		error_log("Printing PDF");
 		$mpdf = new \Mpdf\Mpdf
 		([
-			"tempDir"=> "/tmp",
+			"tempDir"=> sys_get_temp_dir(),
 			'default_font'=>$default_font,
 			'default_font_size'=>$default_font_size,
 			'orientation'=> $orientation
