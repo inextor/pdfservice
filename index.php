@@ -22,7 +22,7 @@ class Service extends RestController
 		$params = $this->getMethodParams();
 		$orientation = $params['orientation']??'P';
 		$default_font_size = $params['default_font_size']??9;
-		$default_font = $params['default_font']??'helvetica';
+		$default_font = $params['default_font']??'Helvetica';
 		$download_name = $params['download_name']?? '';
 
 		return $this->getPdf( $this->getHtml(), $orientation, $default_font_size, $default_font, $download_name );
@@ -39,13 +39,13 @@ class Service extends RestController
 
 		$orientation = $params['orientation']??'P';
 		$default_font_size = $params['default_font_size']??9;
-		$default_font = $params['default_font']??'helvetica';
+		$default_font = $params['default_font']??'Helvetica';
 		$download_name = $params['download_name']? $params['download_name'] : '';
 
 		return $this->getPdf( $params['html'], $orientation, $default_font_size, $default_font, $download_name );
 	}
 
-	function getPdf($html, $orientation='P',$default_font_size=9,$default_font='helvetica', $download_name='')
+	function getPdf($html, $orientation='P',$default_font_size=9,$default_font='Helvetica', $download_name='')
 	{
 		error_log("Printing PDF");
 		$mpdf = new \Mpdf\Mpdf
@@ -55,6 +55,10 @@ class Service extends RestController
 			'default_font_size'=>$default_font_size,
 			'orientation'=> $orientation
 		]);
+
+		//$mpdf->simpleTables = true;
+
+
 
 		try
 		{
